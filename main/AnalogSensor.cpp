@@ -1,4 +1,5 @@
 #include "AnalogSensor.h"
+#include "Arduino.h"
 
 void AnalogSensor::Config(int pin1,float x1,float y1,float x2,float y2){
 pin=pin1;
