@@ -12,45 +12,63 @@ byte lcdenable = 9;
 
 LiquidCrystal lcd (lcdrs, lcdenable, lcd0, lcd1, lcd2, lcd3);
 
-
 byte celsius[8] = {
-B00111,
-B00101,
-B00111,
-B00000,
-B00000,
-B00000,
-B00000,
+  B00111,
+  B00101,
+  B00111,
+  B00000,
+  B00000,
+  B00000,
+  B00000,
 };
 
 float currenttemperatura;
 float currenthumedad;
 
+float tempset;
+float humedadset;
+
+boolean overtemp;
+boolean overhumedad;
+
 void setup() {
 
-    Serial.begin(9600);
+  Serial.begin(9600);
 
-    lcd.createChar(0, celsius);
-    lcd.begin(20, 4);
-    lcd.home();
+  lcd.createChar(0, celsius);
+  lcd.begin(20, 4);
+  lcd.home();
 
-    LM335.Config(A0, 558.558, 763.158, 0, 100);
+  LM335.Config(A0, 558.558, 763.158, 0, 100);
+
+  tempset = 31;
 
 }
 
 
 void loop() {
 
-    currenttemperatura = LM335.Leer();
+  currenttemperatura = LM335.Leer();
 
-    lcd.print ("Temperatura actual: ");
-    lcd.print (String(currenttemperatura));
-    lcd.write(byte(0)); 
-    lcd.home ();
+  lcd.print ("Temperatura: ");
+  lcd.print (String(int(currenttemperatura)));
+  lcd.print (" C");
+  lcd.write(byte(0));
+  lcd.home ();
 
-    Serial.println("--------------------------------");
-    Serial.println("Temp: " + String(currenttemperatura) + " *C");
+  if (currenttemperatura > tempset) {
+    overtemp = true;
+    digitalWrite(13, HIGH);
+  }
 
-    delay(500);
+  else {
+    overtemp = false;
+    digitalWrite(13, LOW);
+  }
+
+    currenthumedad = analogRead(23);
+    Serial.println(currenthumedad);
+
+  delay(100);
 
 }
