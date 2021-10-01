@@ -1,5 +1,7 @@
 #include "LiquidCrystal.h"
-#include "dht.h""
+#include "dht.h"
+dht DHT;
+#define DHT11_PIN 8
 
 byte lcd0 = 6;
 byte lcd1 = 5;
@@ -45,13 +47,22 @@ void setup() {
 
 void loop() {
 
-  //currenttemperatura = ????;
+  DHT.read11(DHT11_PIN);
+  currenthumedad = DHT.humidity;
+  currenttemperatura = DHT.temperature;
 
-  lcd.print ("Temperatura: ");
-  lcd.print (String(int(currenttemperatura)));
+  lcd.print ("Temperatura:");
+  lcd.print (String(DHT.temperature));
   lcd.print (" C");
   lcd.write(byte(0));
-  lcd.home ();
+
+  lcd.setCursor(0,2);
+  Serial.println(currenthumedad);
+  lcd.print ("Humedad:");
+  lcd.print (String(DHT.humidity));
+  lcd.print ("%");
+  lcd.home();
+
 
   if (currenttemperatura > tempset) {
     overtemp = true;
@@ -63,8 +74,15 @@ void loop() {
     digitalWrite(13, LOW);
   }
 
-    currenthumedad = analogRead(23);
-    Serial.println(currenthumedad);
+    if (currenthumedad > humedadset) {
+    overhumedad = true;
+    Serial.println("AAAAAAH QUE HUMEDAD!!");
+  }
+
+  else {
+    overtemp = false;
+    Serial.println("AAAAAAH QUE HUMEDAN'T!!");
+  }
 
   delay(100);
 
