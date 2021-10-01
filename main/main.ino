@@ -1,7 +1,5 @@
 #include "LiquidCrystal.h"
-#include "AnalogSensor.h"
-
-AnalogSensor LM335 = AnalogSensor();
+#include "dht.h""
 
 byte lcd0 = 6;
 byte lcd1 = 5;
@@ -39,16 +37,15 @@ void setup() {
   lcd.begin(20, 4);
   lcd.home();
 
-  LM335.Config(A0, 558.558, 763.158, 0, 100);
-
   tempset = 31;
+  humedadset = 20;
 
 }
 
 
 void loop() {
 
-  currenttemperatura = LM335.Leer();
+  //currenttemperatura = ????;
 
   lcd.print ("Temperatura: ");
   lcd.print (String(int(currenttemperatura)));
