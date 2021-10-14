@@ -8,6 +8,7 @@ dht DHT;
 // RTC Arduino DS1307/3231 "Luis Llamas"
 // Banda Proporcional
 
+//DELCARACION PINES LCD
 byte lcd0 = 6;
 byte lcd1 = 5;
 byte lcd2 = 4;
@@ -15,8 +16,10 @@ byte lcd3 = 13;
 byte lcdrs = 7;
 byte lcdenable = 9;
 
+//CONFIGURACION LCD
 LiquidCrystal lcd(lcdrs, lcdenable, lcd0, lcd1, lcd2, lcd3);
 
+//CREACION BYTE "°"
 byte celsius[8] = {
     B00111,
     B00101,
@@ -27,14 +30,17 @@ byte celsius[8] = {
     B00000,
 };
 
-float currenttemperatura;
-float currenthumedad;
+//DECLARACION VARIABLES DE CONTROL
+int currenttemperatura;
+int currenthumedad;
 
 float tempset;
 float humedadset;
+int margentemp;
+int margenhumedad;
 
-boolean overtemp;
-boolean overhumedad;
+boolean tempstate;
+boolean humedadstate;
 
 void setup()
 {
@@ -45,51 +51,54 @@ void setup()
   lcd.begin(20, 4);
   lcd.home();
 
-  tempset = 31;
-  humedadset = 20;
+  tempset = 25;
+  humedadset = 60;
+  margentemp = 5;
+  margenhumedad = 5;
+
 }
 
 void loop()
 {
 
+  //LEER VALORES DEL SENSOR
   DHT.read11(DHT11_PIN);
   currenthumedad = DHT.humidity;
   currenttemperatura = DHT.temperature;
 
+  //DISPLAY TEMPERATURA
   lcd.print("Temperatura:");
   lcd.print(String(DHT.temperature));
   lcd.print(" C");
   lcd.write(byte(0));
 
+  //DISPLAY HUMEDAD
   lcd.setCursor(0, 2);
-  Serial.println(currenthumedad);
   lcd.print("Humedad:");
   lcd.print(String(DHT.humidity));
   lcd.print("%");
   lcd.home();
 
-  if (currenttemperatura > tempset)
-  {
-    overtemp = true;
-    digitalWrite(13, HIGH);
+  //ENCENDIDO/APAGADO DE TEMPERATURA CON MARGEN
+  if (currenttemperatura >= (tempset + margentemp)){
+    tempstate = true;
+    Serial.println("Temperatura = " + String(currenttemperatura) + ": HIGH");
   }
 
-  else
-  {
-    overtemp = false;
-    digitalWrite(13, LOW);
+  if (currenttemperatura <= (tempset - margentemp)){
+    tempstate = false;
+    Serial.println("Temperatura = " + String(currenttemperatura) + ": LOW");
   }
 
-  if (currenthumedad > humedadset)
-  {
-    overhumedad = true;
-    Serial.println("AAAAAAH QUE HUMEDAD!!");
+  //ENCENDIDO/APAGADO DE HUMEDAD CON MARGEN
+  if (currenthumedad >= (humedadset + margenhumedad)){
+    humedadstate = true;
+    Serial.println("Humedad = " + String(currenthumedad) + ": HIGH");
   }
 
-  else
-  {
-    overtemp = false;
-    Serial.println("AAAAAAH QUE HUMEDAN'T!!");
+  if (currenthumedad <= (humedadset - margenhumedad)){
+    humedadstate = false;
+    Serial.println("Humedad = " + String(currenthumedad) + ": LOW");
   }
 
   delay(100);
