@@ -1,7 +1,7 @@
 #include "LiquidCrystal.h"
 #include <Wire.h>
 #include "RTClib.h"
-RTC_DS1307 rtc;
+RTC_DS3231 rtc;
 #include "dht.h"
 dht DHT;
 #define DHT11_PIN 8
@@ -11,13 +11,13 @@ dht DHT;
 // RTC Arduino DS1307/3231 "Luis Llamas"
 // Banda Proporcional
 
-//DELCARACION VARIABLES RTC
-// Fijar a fecha y hora específica. En el ejemplo, 21 de Enero de 2016 a las 03:00:00
-// rtc.adjust(DateTime(2016, 1, 21, 3, 0, 0));
+// DELCARACION VARIABLES RTC
+//  Fijar a fecha y hora específica. En el ejemplo, 21 de Enero de 2016 a las 03:00:00
+//  rtc.adjust(DateTime(2016, 1, 21, 3, 0, 0));
 String daysOfTheWeek[7] = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
 String monthsNames[12] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
 
-//DECLARACION DE FUNCION PARA IMRESION DE FECHA
+// DECLARACION DE FUNCION PARA IMRESION DE FECHA
 void printDate(DateTime date)
 {
   Serial.print(date.year(), DEC);
@@ -36,7 +36,7 @@ void printDate(DateTime date)
   Serial.println();
 }
 
-//DELCARACION PINES LCD
+// DELCARACION PINES LCD
 byte lcd0 = 6;
 byte lcd1 = 5;
 byte lcd2 = 4;
@@ -44,10 +44,10 @@ byte lcd3 = 13;
 byte lcdrs = 7;
 byte lcdenable = 9;
 
-//CONFIGURACION LCD
+// CONFIGURACION LCD
 LiquidCrystal lcd(lcdrs, lcdenable, lcd0, lcd1, lcd2, lcd3);
 
-//CREACION BYTE "°"
+// CREACION BYTE "°"
 byte celsius[8] = {
     B00111,
     B00101,
@@ -58,7 +58,7 @@ byte celsius[8] = {
     B00000,
 };
 
-//DECLARACION VARIABLES DE CONTROL
+// DECLARACION VARIABLES DE CONTROL
 int currenttemperatura;
 int currenthumedad;
 
@@ -103,48 +103,48 @@ void loop()
   DateTime now = rtc.now();
   printDate(now);
 
-  //LEER VALORES DEL SENSOR
+  // LEER VALORES DEL SENSOR
   DHT.read11(DHT11_PIN);
   currenthumedad = DHT.humidity;
   currenttemperatura = DHT.temperature;
 
-  //DISPLAY TEMPERATURA
+  // DISPLAY TEMPERATURA
   lcd.print("Temperatura:");
   lcd.print(String(DHT.temperature));
   lcd.print(" C");
   lcd.write(byte(0));
 
-  //DISPLAY HUMEDAD
+  // DISPLAY HUMEDAD
   lcd.setCursor(0, 2);
   lcd.print("Humedad:");
   lcd.print(String(DHT.humidity));
   lcd.print("%");
   lcd.home();
 
-  //ENCENDIDO/APAGADO DE TEMPERATURA CON MARGEN
+  // ENCENDIDO/APAGADO DE TEMPERATURA CON MARGEN
   if (currenttemperatura >= (tempset + margentemp))
   {
     tempstate = true;
-    //Serial.println("Temperatura = " + String(currenttemperatura) + ": HIGH");
+    // Serial.println("Temperatura = " + String(currenttemperatura) + ": HIGH");
   }
 
   if (currenttemperatura <= (tempset - margentemp))
   {
     tempstate = false;
-    //Serial.println("Temperatura = " + String(currenttemperatura) + ": LOW");
+    // Serial.println("Temperatura = " + String(currenttemperatura) + ": LOW");
   }
 
-  //ENCENDIDO/APAGADO DE HUMEDAD CON MARGEN
+  // ENCENDIDO/APAGADO DE HUMEDAD CON MARGEN
   if (currenthumedad >= (humedadset + margenhumedad))
   {
     humedadstate = true;
-    //Serial.println("Humedad = " + String(currenthumedad) + ": HIGH");
+    // Serial.println("Humedad = " + String(currenthumedad) + ": HIGH");
   }
 
   if (currenthumedad <= (humedadset - margenhumedad))
   {
     humedadstate = false;
-    //Serial.println("Humedad = " + String(currenthumedad) + ": LOW");
+    // Serial.println("Humedad = " + String(currenthumedad) + ": LOW");
   }
 
   delay(100);
