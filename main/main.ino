@@ -35,7 +35,7 @@ void printDate(DateTime date)
   Serial.print(date.second(), DEC);
   Serial.println();
 }
-
+//nasheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 // DELCARACION PINES LCD
 byte lcd0 = 6;
 byte lcd1 = 5;
