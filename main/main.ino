@@ -5,13 +5,13 @@ RTC_DS3231 rtc;
 #include "dht.h"
 dht DHT;
 #define DHT11_PIN 8
+#include <EEPROM.h>
 
 // Funcion de escritura desde el NodeMCU
-// Almacenamiento d datos no volatiles
+// Almacenamiento d datos no volatiles EEPROM
 // RTC Arduino DS1307/3231 "Luis Llamas"
 
 // DELCARACION VARIABLES RTC
-//  rtc.adjust(DateTime(2016, 1, 21, 3, 0, 0));
 String daysOfTheWeek[7] = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
 String monthsNames[12] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
 
