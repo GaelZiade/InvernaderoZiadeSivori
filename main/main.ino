@@ -60,6 +60,8 @@ byte celsius[8] = {
 int currenttemperatura;
 int currenthumedad;
 
+bool riegostate = false;
+
 float tempset;
 float humedadset;
 int margentemp;
@@ -71,8 +73,10 @@ boolean humedadstate;
 void setup()
 {
 
+  // INICIALIZACION DEL SERIAL
   Serial.begin(9600);
-  
+
+  // CHECKEO ESTADO DEL RTC
   if (!rtc.begin())
   {
     Serial.println(F("Couldn't find RTC"));
@@ -80,15 +84,34 @@ void setup()
       ;
   }
 
+  // COMPRUEBA SI ESTA PROGRAMADO EL ENCENDIDO DEL RIEGO
+  bool isScheduledON(DateTime date)
+  {
+    int weekDay = date.dayOfTheWeek();
+    float hours = date.hour() + date.minute() / 60.0;
+    // De 09:30 a 11:30 y de 21:00 a 23:00
+    bool hourCondition = (hours > 9.50 && hours < 11.50) || (hours > 21.00 && hours < 23.00);
+    // Miercoles, Sabado o Domingo
+    bool dayCondition = (weekDay == 3 || weekDay == 6 || weekDay == 0);
+    if (hourCondition && dayCondition)
+    {
+      return true;
+    }
+    return false;
+  }
+
+  // SI SE APAGO ESTABLECE LOS VALORES ACTUALES DEL RELOJ
   if (rtc.lostPower())
   {
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 
+  // SETUP DEL DISPLAY LCD
   lcd.createChar(0, celsius);
   lcd.begin(20, 4);
   lcd.home();
 
+  // SETEO DE LOS PARAMETROS DE CONTROL
   tempset = 25;
   humedadset = 60;
   margentemp = 5;
@@ -143,6 +166,18 @@ void loop()
   {
     humedadstate = false;
     // Serial.println("Humedad = " + String(currenthumedad) + ": LOW");
+  }
+
+  // ENCENDIDO Y APAGADO DEL RIEGO EN FUNCION DE LA HORA ESTABLECIDA
+  if (riegostate == false && isScheduledON(now))
+  {
+    riegostate = true;
+    Serial.print("Activado");
+  }
+  else if (riegostate == true && !isScheduledON(now))
+  {
+    riegostate = false;
+    Serial.print("Desactivar");
   }
 
   delay(100);
