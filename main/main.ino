@@ -9,10 +9,8 @@ dht DHT;
 // Funcion de escritura desde el NodeMCU
 // Almacenamiento d datos no volatiles
 // RTC Arduino DS1307/3231 "Luis Llamas"
-// Banda Proporcional
 
 // DELCARACION VARIABLES RTC
-//  Fijar a fecha y hora específica. En el ejemplo, 21 de Enero de 2016 a las 03:00:00
 //  rtc.adjust(DateTime(2016, 1, 21, 3, 0, 0));
 String daysOfTheWeek[7] = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
 String monthsNames[12] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
@@ -35,7 +33,7 @@ void printDate(DateTime date)
   Serial.print(date.second(), DEC);
   Serial.println();
 }
-//nasheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
 // DELCARACION PINES LCD
 byte lcd0 = 6;
 byte lcd1 = 5;
@@ -74,7 +72,7 @@ void setup()
 {
 
   Serial.begin(9600);
-
+  
   if (!rtc.begin())
   {
     Serial.println(F("Couldn't find RTC"));
