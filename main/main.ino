@@ -1,4 +1,4 @@
-#include "LiquidCrystal.h"
+#include "LiquidCrystal_I2C.h"
 #include <Wire.h>
 #include "RTClib.h"
 RTC_DS3231 rtc;
@@ -6,10 +6,6 @@ RTC_DS3231 rtc;
 dht DHT;
 #define DHT11_PIN 8
 #include <EEPROM.h>
-
-// Funcion de escritura desde el NodeMCU
-// Almacenamiento d datos no volatiles EEPROM
-// RTC Arduino DS1307/3231 "Luis Llamas"
 
 // DELCARACION VARIABLES RTC
 String daysOfTheWeek[7] = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
@@ -34,26 +30,19 @@ void printDate(DateTime date)
   Serial.println();
 }
 
-// DELCARACION PINES LCD
-byte lcd0 = 6;
-byte lcd1 = 5;
-byte lcd2 = 4;
-byte lcd3 = 13;
-byte lcdrs = 7;
-byte lcdenable = 9;
-
 // CONFIGURACION LCD
-LiquidCrystal lcd(lcdrs, lcdenable, lcd0, lcd1, lcd2, lcd3);
+LiquidCrystal_I2C lcd(0x27,20,4);
 
 // CREACION BYTE "°"
-byte celsius[8] = {
-    B00111,
-    B00101,
-    B00111,
-    B00000,
-    B00000,
-    B00000,
-    B00000,
+byte Celcius[] = {
+  B01110,
+  B01010,
+  B01110,
+  B00000,
+  B00000,
+  B00000,
+  B00000,
+  B00000
 };
 
 // DECLARACION VARIABLES DE CONTROL
@@ -75,6 +64,20 @@ void setup()
 
   // INICIALIZACION DEL SERIAL
   Serial.begin(9600);
+
+  // CONFIGURACION INICIAL LCD
+  lcd.init();
+  lcd.backlight();
+
+  lcd.createChar(0, Celcius);
+
+  lcd.print("Inicializando.");
+  lcd.print(".");
+  delay(10);
+  lcd.print(".");
+  delay(10);
+  lcd.print(".");
+  lcd.clear();
 
   // CHECKEO ESTADO DEL RTC
   if (!rtc.begin())
@@ -106,11 +109,6 @@ void setup()
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 
-  // SETUP DEL DISPLAY LCD
-  lcd.createChar(0, celsius);
-  lcd.begin(20, 4);
-  lcd.home();
-
   // SETEO DE LOS PARAMETROS DE CONTROL
   tempset = 25;
   humedadset = 60;
@@ -133,7 +131,7 @@ void loop()
   lcd.print("Temperatura:");
   lcd.print(String(DHT.temperature));
   lcd.print(" C");
-  lcd.write(byte(0));
+  lcd.write(0);
 
   // DISPLAY HUMEDAD
   lcd.setCursor(0, 2);
@@ -146,26 +144,22 @@ void loop()
   if (currenttemperatura >= (tempset + margentemp))
   {
     tempstate = true;
-    // Serial.println("Temperatura = " + String(currenttemperatura) + ": HIGH");
   }
 
   if (currenttemperatura <= (tempset - margentemp))
   {
     tempstate = false;
-    // Serial.println("Temperatura = " + String(currenttemperatura) + ": LOW");
   }
 
   // ENCENDIDO/APAGADO DE HUMEDAD CON MARGEN
   if (currenthumedad >= (humedadset + margenhumedad))
   {
     humedadstate = true;
-    // Serial.println("Humedad = " + String(currenthumedad) + ": HIGH");
   }
 
   if (currenthumedad <= (humedadset - margenhumedad))
   {
     humedadstate = false;
-    // Serial.println("Humedad = " + String(currenthumedad) + ": LOW");
   }
 
   // ENCENDIDO Y APAGADO DEL RIEGO EN FUNCION DE LA HORA ESTABLECIDA
