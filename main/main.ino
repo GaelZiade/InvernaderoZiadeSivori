@@ -31,19 +31,18 @@ void printDate(DateTime date)
 }
 
 // CONFIGURACION LCD
-LiquidCrystal_I2C lcd(0x27,20,4);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 // CREACION BYTE "°"
 byte Celcius[] = {
-  B01110,
-  B01010,
-  B01110,
-  B00000,
-  B00000,
-  B00000,
-  B00000,
-  B00000
-};
+    B01110,
+    B01010,
+    B01110,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000};
 
 // DECLARACION VARIABLES DE CONTROL
 int currenttemperatura;
@@ -58,6 +57,22 @@ int margenhumedad;
 
 boolean tempstate;
 boolean humedadstate;
+
+  // COMPRUEBA SI ESTA PROGRAMADO EL ENCENDIDO DEL RIEGO
+  bool isScheduledON(DateTime date)
+  {
+    int weekDay = date.dayOfTheWeek();
+    float hours = date.hour() + date.minute() / 60.0;
+    // De 09:30 a 11:30 y de 21:00 a 23:00
+    bool hourCondition = (hours > 9.50 && hours < 11.50) || (hours > 21.00 && hours < 23.00);
+    // Miercoles, Sabado o Domingo
+    bool dayCondition = (weekDay == 3 || weekDay == 6 || weekDay == 0);
+    if (hourCondition && dayCondition)
+    {
+      return true;
+    }
+    return false;
+  }
 
 void setup()
 {
@@ -84,24 +99,9 @@ void setup()
   {
     Serial.println(F("Couldn't find RTC"));
     while (1)
-      ;
-  }
-
-  // COMPRUEBA SI ESTA PROGRAMADO EL ENCENDIDO DEL RIEGO
-  bool isScheduledON(DateTime date)
-  {
-    int weekDay = date.dayOfTheWeek();
-    float hours = date.hour() + date.minute() / 60.0;
-    // De 09:30 a 11:30 y de 21:00 a 23:00
-    bool hourCondition = (hours > 9.50 && hours < 11.50) || (hours > 21.00 && hours < 23.00);
-    // Miercoles, Sabado o Domingo
-    bool dayCondition = (weekDay == 3 || weekDay == 6 || weekDay == 0);
-    if (hourCondition && dayCondition)
     {
-      return true;
-    }
-    return false;
-  }
+    };
+  };
 
   // SI SE APAGO ESTABLECE LOS VALORES ACTUALES DEL RELOJ
   if (rtc.lostPower())

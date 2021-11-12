@@ -6,7 +6,6 @@
 #else
 #include "WProgram.h"
 #endif
-
 #define EE24LC512MAXBYTES 64000
 #define DEVICEADDRESS 0x50
 
