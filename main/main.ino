@@ -4,7 +4,7 @@
 RTC_DS3231 rtc;
 #include "dht.h"
 dht DHT;
-#define DHT11_PIN 8
+#define DHT11_PIN 6
 #include <EEPROM.h>
 
 // DELCARACION VARIABLES RTC
@@ -87,10 +87,11 @@ void setup()
   lcd.createChar(0, Celcius);
 
   lcd.print("Inicializando.");
+  delay(100);
   lcd.print(".");
-  delay(10);
+  delay(100);
   lcd.print(".");
-  delay(10);
+  delay(100);
   lcd.print(".");
   lcd.clear();
 
@@ -166,13 +167,12 @@ void loop()
   if (riegostate == false && isScheduledON(now))
   {
     riegostate = true;
-    Serial.print("Activado");
+    Serial.print("Riego:Activado");
   }
   else if (riegostate == true && !isScheduledON(now))
   {
     riegostate = false;
-    Serial.print("Desactivar");
+    Serial.print("Riego:Desactivado");
   }
 
-  delay(100);
 }
