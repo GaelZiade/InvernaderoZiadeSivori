@@ -2,8 +2,8 @@
 #include <Wire.h>
 #include "RTClib.h"
 RTC_DS3231 rtc;
-#include "dht.h"
-dht DHT;
+#include "DHTStable.h"
+DHTStable DHT;
 #define DHT11_PIN 6
 #include <EEPROM.h>
 
@@ -77,8 +77,8 @@ boolean humedadstate;
 void setup()
 {
 
-  // INICIALIZACION DEL SERIAL
-  Serial.begin(9600);
+  // INICIALIZACION DEL SERIAL CON FRECUENCIA DEL NODEMCU
+  Serial.begin(115200);
 
   // CONFIGURACION INICIAL LCD
   lcd.init();
@@ -124,20 +124,20 @@ void loop()
   printDate(now);
 
   // LEER VALORES DEL SENSOR
-  DHT.read11(DHT11_PIN);
-  currenthumedad = DHT.humidity;
-  currenttemperatura = DHT.temperature;
+  //DHT.read11(DHT11_PIN);
+  currenthumedad = DHT.getHumidity();
+  currenttemperatura = DHT.getTemperature();
 
   // DISPLAY TEMPERATURA
   lcd.print("Temperatura:");
-  lcd.print(String(DHT.temperature));
+  lcd.print(String(currenttemperatura));
   lcd.print(" C");
   lcd.write(0);
 
   // DISPLAY HUMEDAD
   lcd.setCursor(0, 2);
   lcd.print("Humedad:");
-  lcd.print(String(DHT.humidity));
+  lcd.print(String(currenthumedad));
   lcd.print("%");
   lcd.home();
 
@@ -167,12 +167,13 @@ void loop()
   if (riegostate == false && isScheduledON(now))
   {
     riegostate = true;
-    Serial.print("Riego:Activado");
+    Serial.print("Riego: Activado");
   }
   else if (riegostate == true && !isScheduledON(now))
   {
     riegostate = false;
-    Serial.print("Riego:Desactivado");
+    Serial.print("Riego: Desactivado");
   }
 
+delay (2000); //DELAY NECESARIO PARA LA LACTURA DEL DHT11
 }
