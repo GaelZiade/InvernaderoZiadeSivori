@@ -7,6 +7,8 @@ DHTStable DHT;
 #define DHT11_PIN 6
 #include <EEPROM.h>
 
+//PRUEBA NODEMCU 24/11/2021
+
 // DELCARACION VARIABLES RTC
 String daysOfTheWeek[7] = {"Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
 String monthsNames[12] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
